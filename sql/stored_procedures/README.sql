@@ -1,0 +1,9 @@
+-- Create these stored procedures:
+-- 1. spFastAPIGetUserRole
+-- 2. spFastAPIUpsertProduct
+-- 3. spFastAPIGetProducts
+-- 4. spFastAPIGetProductById
+-- 5. spFastAPIDeleteProduct
+-- 6. spFastAPIAddFavorite
+-- 7. spFastAPIRemoveFavorite
+-- 8. spFastAPIGetFavorites

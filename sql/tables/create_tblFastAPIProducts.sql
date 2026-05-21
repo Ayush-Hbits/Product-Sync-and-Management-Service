@@ -1,0 +1,11 @@
+CREATE TABLE IF NOT EXISTS tblFastAPIProducts (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    external_product_id INT NOT NULL UNIQUE,
+    title VARCHAR(255) NOT NULL,
+    price DECIMAL(10,2),
+    category VARCHAR(100),
+    description TEXT,
+    image_url TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
