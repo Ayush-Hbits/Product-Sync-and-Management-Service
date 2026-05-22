@@ -5,7 +5,7 @@ def upsert_product(db, product):
 
     execute_sp(
         db,
-        "sp_UpsertProduct",
+        "usp_UpsertProduct",
         {
             "p_external_product_id": product["id"],
             "p_title": product["title"],

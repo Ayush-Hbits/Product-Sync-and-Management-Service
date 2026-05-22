@@ -2,19 +2,15 @@ from app.repositories.product_repository import (get_products,get_product_by_id,
 import math
 
 def build_meta_response(rows_and_count, page, limit):
-    """
-    Safely reads database results whether they come back as a 
-    dictionary, a combined list, or a raw list of items.
-    """
+  
     total_records = 0
     rows = []
 
-    # 1. If execute_sp returned a dictionary (like we planned)
+   
     if isinstance(rows_and_count, dict):
         total_records = rows_and_count.get("total_records", 0)
         rows = rows_and_count.get("data", [])
 
-    # 2. If execute_sp returned a raw flat list (Why it crashed)
     elif isinstance(rows_and_count, list):
 
         rows = rows_and_count
@@ -24,7 +20,6 @@ def build_meta_response(rows_and_count, page, limit):
         else:
             total_records = len(rows)
 
-    # Calculate dynamic metadata pages safely
     total_pages = math.ceil(total_records / limit) if total_records > 0 else 0
     
     return {
@@ -40,21 +35,17 @@ def build_meta_response(rows_and_count, page, limit):
 
 
 
-def fetch_products(db, page: int = 1, limit: int = 10):
+def fetch_products(db, page: int = 1, limit: int = 10, sort_by: str = "id", order: str = "asc"):
     offset = (page-1) * limit
-    result = get_products(db,offset, limit)
+    result = get_products(db,offset, limit, sort_by, order)
     return build_meta_response(result, page, limit)
   
 
-
-
 def fetch_product_by_id(db, product_id):
-    
     products = get_product_by_id(
         db,
         product_id
     )
-
     if not products:
         return None
     
@@ -64,20 +55,15 @@ def fetch_product_by_id(db, product_id):
     return products
 
 
-def fetch_searched_products(db, keyword, page: int = 1, limit: int = 10):
+def fetch_searched_products(db, keyword, page: int = 1, limit: int = 10, sort_by: str = "id", order: str = "asc"):
     offset = (page-1) * limit
-    result = search_products(db, keyword, offset=offset, limit=limit)
+    result = search_products(db, keyword, offset=offset, limit=limit, sort_by=sort_by, order=order)
     return build_meta_response(result, page, limit)
 
 
-def fetch_filtered_products(db, category, page: int=1, limit: int=10):
+def fetch_filtered_products(db, category, page: int=1, limit: int=10, sort_by: str = "id", order: str = "asc"):
     offset = (page-1) * limit
-    result = filter_products(
-        db,
-        category,
-        limit=limit,
-        offset=offset
-    )
+    result = filter_products(db,category,offset=offset,limit=limit,sort_by=sort_by,order=order)
     return build_meta_response(result, page, limit)
     
 

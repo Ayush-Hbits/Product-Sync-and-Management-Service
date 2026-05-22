@@ -13,7 +13,7 @@ def execute_sp(db, procedure_name, params=None):
     sql = f"CALL {procedure_name}({placeholders})"
 
     result = db.execute(text(sql), params)
-
+    db.commit()
     try:
         rows = result.mappings().all()
         return [dict(row) for row in rows]

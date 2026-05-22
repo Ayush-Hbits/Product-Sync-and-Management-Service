@@ -5,19 +5,21 @@ from app.api.deps import require_role
 from app.core.database import get_db
 from app.services.product_service import (fetch_products,fetch_product_by_id,fetch_searched_products,fetch_filtered_products,remove_product)
 from fastapi import Query
-
+from app.schemas.product_schema import (ProductListResponseSchema, ProductResponseSchema)
 router = APIRouter()
 
 
-@router.get("/")
+@router.get("/", response_model=ProductListResponseSchema)
 def get_products_api(
     page: int = 1,
     limit: int = 10,
+    sort_by: str = "id",
+    order: str = "asc",
     db: Session = Depends(get_db),
-    user=Depends(require_role(["Admin", "Subscriber"]))
+    user=Depends(require_role(["administrator", "subscriber"]))
 ):
 
-   products_response = fetch_products(db,page,limit)
+   products_response = fetch_products(db,page,limit,sort_by,order)
    product_list = products_response.get("data", [])
 
    return {
@@ -29,16 +31,18 @@ def get_products_api(
 
 
 
-@router.get("/search")
+@router.get("/search", response_model=ProductListResponseSchema)
 def search_products_api(
     page: int = 1,
     limit: int = 10,
+    sort_by: str = "id",
+    order: str = "asc",
     keyword: str = Query(...),
     db: Session = Depends(get_db),
-    user = Depends(require_role(["Admin", "Subscriber"]))
+    user = Depends(require_role(["administrator", "subscriber"]))
 ):
 
-    products_response = fetch_searched_products(db, keyword,page,limit)
+    products_response = fetch_searched_products(db, keyword,page,limit,sort_by,order)
     product_list = products_response.get("data", [])
 
     return {
@@ -50,16 +54,18 @@ def search_products_api(
 
 
 
-@router.get("/filter")
+@router.get("/filter", response_model=ProductListResponseSchema)
 def filter_products_api(
     page: int = 1,
     limit: int = 10,
     category: str = Query(...),
+    sort_by: str = "id",
+    order: str = "asc",
     db: Session = Depends(get_db),
-    user=Depends(require_role(["Admin", "Subscriber"]))
+    user=Depends(require_role(["administrator", "subscriber"]))
 ):
 
-    products_response = fetch_filtered_products(db, category,page,limit)
+    products_response = fetch_filtered_products(db, category,page,limit,sort_by,order)
     product_list = products_response.get("data", [])
 
     return {
@@ -71,11 +77,11 @@ def filter_products_api(
 
 
 
-@router.get("/{product_id}")
+@router.get("/{product_id}", response_model=ProductResponseSchema)
 def get_product_by_id_api(
     product_id: int,
     db: Session = Depends(get_db),
-    user=Depends(require_role(["Admin", "Subscriber"]))
+    user=Depends(require_role(["administrator", "subscriber"]))
 ):
 
     product = fetch_product_by_id(
@@ -92,11 +98,11 @@ def get_product_by_id_api(
     return product
 
 
-@router.delete("/{product_id}")
+@router.delete("/{product_id}", response_model=dict)
 def delete_product_api(
     product_id: int,
     db: Session = Depends(get_db),
-    user=Depends(require_role(["Admin"]))
+    user=Depends(require_role(["administrator"]))
 ):
 
     return remove_product(db, product_id)
