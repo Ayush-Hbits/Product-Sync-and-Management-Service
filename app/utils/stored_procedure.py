@@ -1,12 +1,24 @@
 from sqlalchemy import text
+from sqlalchemy.exc import ResourceClosedError
 
-def execute_sp(db, sp_name:str, params:dict | None = None):
+
+def execute_sp(db, procedure_name, params=None):
+
     params = params or {}
-    placeholders = ", ".join([f":{key}" for key in params.keys()])
-    sql = f"CALL {sp_name}({placeholders})"
-    result =db.execute(text(sql), params)
-    rows = result.mappings().all()
-    return [dict(row) for row in rows]
 
+    placeholders = ", ".join(
+        [f":{key}" for key in params.keys()]
+    )
+
+    sql = f"CALL {procedure_name}({placeholders})"
+
+    result = db.execute(text(sql), params)
+
+    try:
+        rows = result.mappings().all()
+        return [dict(row) for row in rows]
+
+    except ResourceClosedError:
+        return None
 
 
