@@ -34,25 +34,25 @@ def build_meta_response(rows_and_count, page, limit):
 
 
 
-
 def fetch_products(db, page: int = 1, limit: int = 10, sort_by: str = "id", order: str = "asc"):
     offset = (page-1) * limit
     result = get_products(db,offset, limit, sort_by, order)
     return build_meta_response(result, page, limit)
+
   
 
 def fetch_product_by_id(db, product_id):
-    products = get_product_by_id(
+    product = get_product_by_id(
         db,
         product_id
     )
-    if not products:
+    if not product:
         return None
     
-    if isinstance(products, list):
-        return products[0] if len(products) >0 else None
-
-    return products
+    if isinstance(product, list):
+        product = product[0] if product else None
+    
+    return {"data": product}
 
 
 def fetch_searched_products(db, keyword, page: int = 1, limit: int = 10, sort_by: str = "id", order: str = "asc"):
